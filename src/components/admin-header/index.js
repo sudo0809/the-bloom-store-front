@@ -1,13 +1,13 @@
-import { useContext } from "react";
-import { NavLinkTag, HeaderContainer, NavLinkContainer, NavLinkItems, RightSideDiv, Button, } from "./style";
-import useFetch from "../../hooks/useFetch";
-import { Link } from "react-router-dom";
-import AuthContext from "../../context/AuthProvider";
+import React, { useContext } from 'react'
+import useFetch from '../../hooks/useFetch';
+import { Link } from 'react-router-dom';
+import AuthContext from '../../context/AuthProvider';
+import { Button, HeaderContainer, NavLinkContainer, NavLinkItems, NavLinkTag, RightSideDiv } from './style';
 
-const Header = () => {
+function AdminHeader() {
 
     const { setAuth, isLoggedIn, setIsLoggedIn } = useContext(AuthContext)
- 
+
     const useFetchResp = useFetch('logout', 'GET', {}, false);
 
     const handleLogout = () => {
@@ -18,12 +18,15 @@ const Header = () => {
         setIsLoggedIn(false)
     }
 
+
+
+
     return (
         <HeaderContainer>
-            <div className="logo">Logo</div>
+            <div className="logo">Admin</div>
             <NavLinkContainer>
-                <NavLinkItems><NavLinkTag to="/">Home</NavLinkTag></NavLinkItems>
-                <NavLinkItems><NavLinkTag to="/plants">Plants</NavLinkTag></NavLinkItems>
+                <NavLinkItems><NavLinkTag to="/products">Plants</NavLinkTag></NavLinkItems>
+                <NavLinkItems><NavLinkTag to="/create-product">Add Product</NavLinkTag></NavLinkItems>
                 <NavLinkItems><NavLinkTag to="/seeds">Seeds</NavLinkTag></NavLinkItems>
                 <NavLinkItems><NavLinkTag to="/accesories">Accessories</NavLinkTag></NavLinkItems>
             </NavLinkContainer>
@@ -42,4 +45,4 @@ const Header = () => {
     )
 }
 
-export default Header;
+export default AdminHeader

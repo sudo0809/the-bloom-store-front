@@ -3,13 +3,18 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { RouterProvider} from 'react-router-dom';
-
+import { RouterProvider } from 'react-router-dom';
+import axios from 'axios';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+axios.defaults.baseURL = 'http://localhost:8080';
+
+
 root.render(
   <React.StrictMode>
+
     <RouterProvider router={App} />
+
   </React.StrictMode>
 );
 

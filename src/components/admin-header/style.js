@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import ReactModal from "react-modal";
 
 export const HeaderContainer = styled.header`
     display: flex;
@@ -27,8 +26,4 @@ export const RightSideDiv = styled.div`
 `
 export const Button = styled.button`
 
-`
-
-export const Modal = styled(ReactModal)`
-    width: 400px;
 `

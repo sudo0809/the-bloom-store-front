@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 
 const useFetch = (endpoint, method, payload, runImmedietly) => {
@@ -5,54 +6,46 @@ const useFetch = (endpoint, method, payload, runImmedietly) => {
     const [error, setError] = useState(null);
 
     const url = `${process.env.REACT_APP_BACK_URL}/${endpoint}`;
-    
-    
+
+
     const fetchData = useCallback(async () => {
-        var default_options = {
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            method: method
-        };
-    
-        var extra_param;
+        const headers = {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+
+        var data;
         switch (method) {
             case 'POST':
-                extra_param = { body: JSON.stringify(payload) };
+                data = payload;
                 break;
             default:
-                extra_param = {}
-    
+                data = {}
+
         };
-    
-        const options = {...default_options, ...extra_param }
 
-        
-        try {
-            const response = await fetch(url, options);
-            console.log('fetch response :: ', response)
+        const axios_response = await axios({
+            url: url,
+            method: method,
+            headers: headers,
+            withCredentials: true,
+            credentials: "include",
+            data: data
+        }).then(response => {
+            const fetchedData = response.data;
+            setError(null);
+            setData(fetchedData);
+            return { data: fetchedData };
+        }).catch(err => {
+            const error = err.response.data;
+            const errorMessage = error.message;
+            setError(errorMessage);
+            setData(null);
+            return { error: errorMessage };
+        });
 
-            if (response.status >= 400) {
-                const message = await response.json().then((res => {
-                    console.log('error :: ', res.message);
-                    setError(res.message);
-                    return res.message
-                }))
-                console.log('Custome error from Node :: ', message);
-                throw new Error(message)
-            }
+        return axios_response
 
-            await response.json().then((res) => {
-                setData(res.data);
-
-            })
-            return response.data
-    
-        } catch(e) {
-            console.log(e); // manipulate afterwards
-        }
-       
     }, [url, method, payload]);
 
     useEffect(() => {

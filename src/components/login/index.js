@@ -1,58 +1,75 @@
-import { useState } from "react";
-import { CloseImg, ContainerHeader, DivLink, Input, LoginContainer, LoginForm, SignupDiv, Submit } from "./style";
-import close_icon from '../../svgs/close_icon.svg'
+import { useContext, useState } from "react";
+import { ContainerHeader, Dash, DivLink, Input, Label, LoginContainer, LoginForm, SignupDiv, Submit } from "./style";
 import useFetch from "../../hooks/useFetch";
+import { Navigate } from "react-router-dom";
+import AuthContext from "../../context/AuthProvider";
 
-const Login = ({ isLoginModal, closeModal }) => {
+const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const payload = {
         email: username,
         password: password
     }
 
-    const {result, error, fetchData} = useFetch('login-user', 'POST', payload)
-    console.log(result, error, fetchData);
+    const { setAuth,isLoggedIn, setIsLoggedIn } = useContext(AuthContext)
 
-    const handleSubmit = (e) => {
+    const { error, fetchData } = useFetch('login', 'POST', payload)
+
+    const handleSubmit = async (e) => {
         // validate data from user and create a session if correct
         e.preventDefault();
 
-        fetchData((res) => {
-            console.log(res)
-        })
-        
+        try{
+            const fetchResponse = await fetchData()
+            if (fetchResponse.error) {
+                console.log('error :: ',fetchResponse.error)
+            } else {
+                setIsLoggedIn(true);
+                setAuth({role: fetchResponse.data.role});
+                localStorage.setItem('token', `Bearer ${fetchResponse.data.token}`)
+            }
+        } catch (err) {
+            console.log(err);
+        } 
 
-        console.log('username:: ', username);
-        console.log('password:: ', password);
-
-    };
-
+    }
 
     return (
         <LoginContainer>
             <ContainerHeader>
                 <h1>Login</h1>
-                <CloseImg src={close_icon} alt="X" onClick={closeModal} />
+                <Dash></Dash>
             </ContainerHeader>
             <LoginForm onSubmit={handleSubmit} >
-                <Input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Email" />
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password" />
+                {error && <p>{error}</p>}
+                {isLoggedIn && (
+                    <Navigate to="/" replace={true} />
+                )}
+                <Label>
+                    Email
+                    <Input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </Label>
+                <Label>
+                    Password
+                    <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Label>
                 <Submit
                     type="submit"
                     value="Login" />
             </LoginForm>
             <SignupDiv>
-                <DivLink onClick={isLoginModal}>Create Account</DivLink>
+                <DivLink to="/signup">Create Account</DivLink>
                 <div>If you don't have an account</div>
             </SignupDiv>
         </LoginContainer>

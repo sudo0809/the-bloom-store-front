@@ -1,24 +1,27 @@
 import { useState } from "react";
-import { CloseImg, ContainerHeader, DivLink, Input, LoginDiv, SignupContainer, SignupForm, Submit } from "./style";
-import close_icon from '../../svgs/close_icon.svg';
+import { ContainerHeader, Dash, DivLink, Input, Label, LoginDiv, SignupContainer, SignupForm, Submit } from "./style";
 import useFetch from "../../hooks/useFetch";
+import { Navigate } from "react-router-dom";
 
-const Signup = ({ isLoginModal, closeModal }) => {
-    const [username, setUsername] = useState('');
+const Signup = () => {
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [isSignedUp, setIsSignedUp] = useState(false)
 
     const payload = {
-        name: username,
+        first_name: firstname,
+        last_name: lastname,
         email: email,
         password: password
     }
 
-    const { result, error, fetchData } = useFetch('create-user', 'POST', payload, false);
+    const { error, fetchData } = useFetch('create-user', 'POST', payload, false);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         // validate data from user and create a session if correct
         e.preventDefault();
 
@@ -27,46 +30,70 @@ const Signup = ({ isLoginModal, closeModal }) => {
             return;
         }
 
-        const fetchResult = fetchData();
-        console.log('fetchResult => ', fetchResult);
-        console.log('error => ', error);
+        const fetchResponse = await fetchData()
 
-    };
+        if (fetchResponse.data) {
+            setIsSignedUp(true);
+        }
+
+    }
 
     return (
         <SignupContainer>
             <ContainerHeader>
                 <h1>Signup</h1>
-                <CloseImg src={close_icon} alt="X" onClick={closeModal} />
+                <Dash></Dash>
             </ContainerHeader>
             <SignupForm onSubmit={handleSubmit} >
-                <Input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Name" />
-                <Input
-                    type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email" />
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password" />
-                <Input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirm Password" />
+                {error ? error : <></>}
+                {isSignedUp ? <Navigate to="/" replace={true} /> : <></>}
+                <Label>
+                    First Name
+                    <Input
+                        type="text"
+                        value={firstname}
+                        onChange={(e) => setFirstname(e.target.value)}
+                    />
+                </Label>
+                <Label>
+                    Last Name
+                    <Input
+                        type="text"
+                        value={lastname}
+                        onChange={(e) => setLastname(e.target.value)}
+                    />
+                </Label>
+                <Label>
+                    Email
+                    <Input
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Label>
+                <Label>
+                    Password
+                    <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Label>
+                <Label>
+                    Confirm Password
+                    <Input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                </Label>
+
                 <Submit
                     type="submit"
                     value="Signup" />
             </SignupForm>
-            {result ? result : <h5>Loading...</h5>  }
             <LoginDiv>
-                <DivLink onClick={isLoginModal}>Login</DivLink>
+                <DivLink to="/login">Login</DivLink>
                 <div>If you already have an account</div>
             </LoginDiv>
         </SignupContainer>
