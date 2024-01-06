@@ -3,9 +3,9 @@
 Place to buy or sell everything and anything related fauna. 
 
 ## Functionalities
--> Account login/signup 
--> Cart and Order 
--> Search possible without account
+-> Account login/signup\
+-> Cart and Order \
+-> Search possible without account \
 -> Welcome email integration
 
 # Getting Started with The Bloom Store
